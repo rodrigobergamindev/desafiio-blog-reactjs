@@ -31,6 +31,7 @@ interface HomeProps {
 }
 
  export default function Home({ postsPagination }: HomeProps) {
+   
 
   const [nextPageLink, setNextPageLink] = useState(postsPagination.next_page);
 
@@ -71,7 +72,24 @@ interface HomeProps {
 
     <div>
     {postData?.map(posts => (
-            console.log(posts)
+            <Link href={`/post/${posts.uid}`} key={posts.uid}>
+              <a>
+                <strong>{posts.data.title}</strong>
+                  <p>{posts.data.subtitle}</p>
+                  <div className={styles.info}>
+                    
+                    <p>{format(new Date(posts.first_publication_date), 'dd MMM yyyy', {locale: ptBR, })}</p>
+                    
+                    <p>{posts.data.author}</p>
+                  </div>
+
+                  <div>
+                  {nextPageLink === null ? (
+                  false
+                  ) : <a  className={styles.nextPage} onClick={handleNextPage}>Carregar mais posts</a>}
+                  </div>
+                </a>
+            </Link>
             ))}
     </div>
 
@@ -80,32 +98,34 @@ interface HomeProps {
    
 }
 
- export const getStaticProps = async () => {
-    const prismic = getPrismicClient();
-  
-    const postsResponse = await prismic.query([
-      Prismic.Predicates.at('document.type', 'posts')
-    ], {
-      fetch: ['posts.title', 'posts.subtitle', 'posts.author','posts.content'],
-      pageSize: 1,
-    });
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient();
   
   
-    const posts = postsResponse.results.map(post => {
-      return {
-        uid: post.uid,
-        first_publication_date: post.first_publication_date,
-        data: {
-          title: post.data.title,
-          subtitle: post.data.subtitle,
-          author: post.data.author,
-        },
-        
-      }
-    })  
-  
+
+  const postsResponse = await prismic.query([
+    Prismic.Predicates.at('document.type', 'posts')
+  ], {
+    fetch: ['posts.title', 'posts.subtitle', 'posts.author','posts.content'],
+    pageSize: 2,
+  });
+
+
+  const posts = postsResponse.results.map(post => {
     return {
-      props: {postsPagination: {results: posts, next_page: postsResponse.next_page}}
+      uid: post.uid,
+      first_publication_date: post.first_publication_date,
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author,
+      },
+      
     }
-    
- }
+  })  
+
+
+  return {
+    props: {postsPagination: {results: posts, next_page: postsResponse.next_page}}
+  }
+};
