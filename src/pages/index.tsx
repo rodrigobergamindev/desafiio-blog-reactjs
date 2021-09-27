@@ -1,12 +1,17 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable prettier/prettier */
 import { GetStaticProps } from 'next';
 
+import { FiCalendar, FiUser } from "react-icons/fi";
+
+import Prismic from '@prismicio/client';
+
 import { getPrismicClient } from '../services/prismic';
-import Prismic from '@prismicio/client'
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
-import {RichText} from 'prismic-dom'
-import {useState} from 'react'
-import Link from 'next/link'
+import Header from '../components/Header';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -30,8 +35,9 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
- export default function Home({ postsPagination }: HomeProps) {
-   
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export default function Home({ postsPagination }: HomeProps) {
 
   const [nextPageLink, setNextPageLink] = useState(postsPagination.next_page);
 
@@ -39,13 +45,14 @@ interface HomeProps {
   
   const [postData, setPostData] = useState(postsPagination.results)
 
+  
   const handleNextPage = () => {
     setGoNextPage(!goNextPage)
 
   fetch(nextPageLink)
     .then(response => response.json())
     .then(function(data) {
-      console.log(data)
+     
       const dataToLoad = data.results.map(post => {
         return {        
           uid: post.uid,
@@ -67,35 +74,36 @@ interface HomeProps {
   }
 
   return (
-    <>
-    <h1>Posts</h1>
-
     <div>
-    {postData?.map(posts => (
+      <Header/>
+
+      <div className={styles.main}>
+        <div className={styles.posts}>
+          {postData?.map(posts => (
             <Link href={`/post/${posts.uid}`} key={posts.uid}>
               <a>
                 <strong>{posts.data.title}</strong>
                   <p>{posts.data.subtitle}</p>
                   <div className={styles.info}>
-                    
+                    <FiCalendar/>
                     <p>{format(new Date(posts.first_publication_date), 'dd MMM yyyy', {locale: ptBR, })}</p>
-                    
+                    <FiUser/>
                     <p>{posts.data.author}</p>
-                  </div>
-
-                  <div>
-                  {nextPageLink === null ? (
-                  false
-                  ) : <a  className={styles.nextPage} onClick={handleNextPage}>Carregar mais posts</a>}
                   </div>
                 </a>
             </Link>
             ))}
+        </div>
+        {nextPageLink === null ? (
+          false
+        ) : <a  className={styles.nextPage} onClick={handleNextPage}>Carregar mais posts</a>}
+      </div>
+
+
     </div>
 
-    </>
   )
-   
+
 }
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -107,7 +115,7 @@ export const getStaticProps: GetStaticProps = async () => {
     Prismic.Predicates.at('document.type', 'posts')
   ], {
     fetch: ['posts.title', 'posts.subtitle', 'posts.author','posts.content'],
-    pageSize: 2,
+    pageSize: 1,
   });
 
 

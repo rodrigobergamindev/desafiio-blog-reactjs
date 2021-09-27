@@ -1,1 +1,58 @@
 // TODO
+
+.main{
+    .posts {
+      width: 700px;
+      margin: 0 auto;
+      
+      display: block;
+      padding-top: 3rem;
+    
+      a{
+        
+        strong {
+          font-size: 2rem;
+          font-weight: bold;
+          padding-bottom: 1rem;
+          transition: color 0.2s;
+          padding-top: 1rem;
+    
+          &:hover {
+            color: var(--pink-500);
+          }
+        }
+      
+    
+        p {
+          font-size: 1rem;
+          font-weight: 400;
+          padding: 1rem 0;
+          color: var(--gray-200);
+        }
+    
+        .info {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding-bottom: 3.5rem;
+          p {
+            padding: 0 0.5rem;
+          }
+        }
+      }
+    
+    
+      
+    }
+  
+    .nextPage {
+      font-size: 1rem;
+      width: 700px;
+      margin: 0 auto;
+      display: block;
+      color: var(--pink-500);
+      cursor: pointer;
+    }
+  
+  }
+  
